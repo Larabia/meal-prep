@@ -2,7 +2,8 @@
   "name": "Meal Prep Lorena",
   "short_name": "Meal Prep",
   "description": "Plan de meal prep semanal antiinflamatorio",
-  "start_url": "/",
+  "start_url": "/meal-prep/index.html",
+  "scope": "/meal-prep/",
   "display": "standalone",
   "background_color": "#f5f0eb",
   "theme_color": "#3B6D11",
@@ -20,8 +21,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "apple-mobile-web-app-capable": "yes",
-  "apple-mobile-web-app-status-bar-style": "default",
-  "apple-mobile-web-app-title": "Meal Prep"
+  ]
 }
