@@ -1,1176 +1,152 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Meal Prep">
-<meta name="theme-color" content="#3B6D11">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Meal Prep Lorena</title>
-<style>
-:root {
-  --green: #3B6D11;
-  --green-light: #EAF3DE;
-  --green-dark: #2a4f0c;
-  --blue-light: #E6F1FB;
-  --blue: #185FA5;
-  --orange-light: #FAEEDA;
-  --orange: #854F0B;
-  --red-light: #FAECE7;
-  --red: #993C1D;
-  --purple-light: #F3EAF9;
-  --purple: #6B21A8;
-  --bg: #f5f0eb;
-  --card: #ffffff;
-  --border: #e5e0da;
-  --text: #1a1a1a;
-  --text-secondary: #6b6560;
-  --safe-top: env(safe-area-inset-top);
-  --safe-bottom: env(safe-area-inset-bottom);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: calc(70px + var(--safe-bottom));
-}
-
-/* TOP BAR */
-.topbar {
-  background: var(--green);
-  padding: calc(var(--safe-top) + 12px) 16px 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.topbar h1 { color: white; font-size: 17px; font-weight: 600; }
-.topbar p { color: rgba(255,255,255,0.75); font-size: 12px; margin-top: 2px; }
-
-/* BOTTOM NAV */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-top: 1px solid var(--border);
-  display: flex;
-  padding-bottom: var(--safe-bottom);
-  z-index: 100;
-}
-.nav-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 4px;
-  border: none;
-  background: none;
-  color: var(--text-secondary);
-  font-size: 10px;
-  gap: 3px;
-  cursor: pointer;
-}
-.nav-btn .icon { font-size: 22px; }
-.nav-btn.active { color: var(--green); }
-.nav-btn.active .icon { filter: none; }
-
-/* PAGES */
-.page { display: none; padding: 16px; }
-.page.active { display: block; }
-
-/* CARDS */
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.section-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-/* BADGES */
-.badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-bottom: 8px;
-}
-.badge-green { background: var(--green-light); color: var(--green); }
-.badge-blue { background: var(--blue-light); color: var(--blue); }
-.badge-orange { background: var(--orange-light); color: var(--orange); }
-.badge-purple { background: var(--purple-light); color: var(--purple); }
-
-/* TAGS */
-.tag {
-  display: inline-block;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 8px;
-  margin-right: 4px;
-  margin-top: 3px;
-}
-.tag-p { background: var(--red-light); color: var(--red); }
-.tag-g { background: var(--green-light); color: var(--green); }
-.tag-v { background: var(--blue-light); color: var(--blue); }
-.tag-c { background: var(--orange-light); color: var(--orange); }
-
-/* TABS WITHIN PAGE */
-.tab-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  -webkit-overflow-scrolling: touch;
-}
-.tab-row::-webkit-scrollbar { display: none; }
-.tab-pill {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: transparent;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  font-family: inherit;
-}
-.tab-pill.active {
-  background: var(--green);
-  color: white;
-  border-color: var(--green);
-}
-
-/* MEAL ROWS */
-.meal-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  align-items: flex-start;
-}
-.meal-label {
-  font-size: 11px;
-  color: var(--text-secondary);
-  min-width: 60px;
-  padding-top: 9px;
-  line-height: 1.3;
-}
-.meal-label.postre { color: var(--orange); }
-.meal-cell {
-  flex: 1;
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 8px 11px;
-}
-.meal-cell.postre { background: var(--orange-light); }
-.meal-cell.nuevo { border: 1.5px solid #9FE1CB; }
-.meal-name { font-size: 13px; font-weight: 500; }
-.meal-desc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
-.meal-nuevo { font-size: 10px; background: var(--green-light); color: var(--green); padding: 1px 6px; border-radius: 8px; display: inline-block; margin-bottom: 3px; }
-
-/* DIVIDER */
-.divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
-
-/* PREP BLOCKS */
-.prep-block {
-  border-radius: 12px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
-}
-.prep-sab { background: var(--purple-light); }
-.prep-dom { background: var(--green-light); }
-.prep-block-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-.prep-sab .prep-block-title { color: var(--purple); }
-.prep-dom .prep-block-title { color: var(--green-dark); }
-.task-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  font-size: 13px;
-}
-.task-row:last-child { border-bottom: none; }
-.task-icon { font-size: 14px; min-width: 20px; }
-.task-text { flex: 1; color: var(--text); line-height: 1.4; }
-.task-time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; padding-top: 2px; }
-
-/* RESUMEN */
-.resumen-box {
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-}
-.resumen-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-.resumen-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 5px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-.resumen-row:last-child { border-bottom: none; }
-.resumen-label { flex: 1; color: var(--text); }
-.resumen-sub { font-size: 10px; color: var(--text-secondary); white-space: nowrap; }
-.resumen-cant { font-size: 12px; font-weight: 600; color: var(--red); white-space: nowrap; }
-
-/* TIEMPOS */
-.tiempo-grid { display: flex; gap: 8px; margin-bottom: 12px; }
-.tiempo-box { flex: 1; background: var(--bg); border-radius: 10px; padding: 8px; text-align: center; }
-.tiempo-num { font-size: 18px; font-weight: 700; color: var(--text); }
-.tiempo-label { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
-
-/* LISTA COMPRAS */
-.compra-section { margin-bottom: 14px; }
-.compra-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  display: inline-block;
-}
-.compra-title.carniceria { background: var(--red-light); color: var(--red); }
-.compra-title.verduleria { background: var(--blue-light); color: var(--blue); }
-.compra-title.despensa { background: var(--green-light); color: var(--green); }
-.compra-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--card);
-  border-radius: 10px;
-  margin-bottom: 6px;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.compra-item.done { opacity: 0.4; }
-.compra-item.done .compra-text { text-decoration: line-through; }
-.compra-check {
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: all 0.15s;
-}
-.compra-item.done .compra-check {
-  background: var(--green);
-  border-color: var(--green);
-  color: white;
-}
-.compra-text { font-size: 14px; color: var(--text); }
-
-/* RECETAS */
-.receta-card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-}
-.receta-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
-.receta-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
-.receta-ing { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; background: var(--bg); padding: 8px 10px; border-radius: 8px; }
-.receta-step { display: flex; gap: 10px; margin-bottom: 7px; font-size: 13px; line-height: 1.5; }
-.step-num {
-  min-width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--green-light);
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-  flex-shrink: 0;
-}
-
-/* TIP */
-.tip {
-  background: var(--green-light);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--green-dark);
-  line-height: 1.5;
-}
-.warn {
-  background: var(--orange-light);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font-size: 12px;
-  color: var(--orange);
-  line-height: 1.5;
-}
-.info {
-  background: var(--blue-light);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font-size: 12px;
-  color: var(--blue);
-  line-height: 1.5;
-}
-
-/* ESTRUCTURA FIJA */
-.estructura-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-.estructura-row:last-child { border-bottom: none; }
-.estructura-label { flex: 1; color: var(--text); }
-.estructura-sub { font-size: 11px; color: var(--text-secondary); }
-.estructura-val { font-size: 12px; font-weight: 500; color: var(--red); text-align: right; max-width: 140px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#17324d" />
+  <meta name="description" content="Control de días trabajados, kilómetros y próximos cobros por quincena." />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./style.css?v=10" />
+  <title>Chamba App</title>
 </head>
 <body>
-
-<div class="topbar">
-  <h1>🥦 Meal Prep Lorena</h1>
-  <p>Plan antiinflamatorio · 3 findes</p>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <button class="nav-btn active" onclick="showPage('prep',this)">
-    <span class="icon">🍳</span>Prep
-  </button>
-  <button class="nav-btn" onclick="showPage('menu',this)">
-    <span class="icon">📅</span>Menú
-  </button>
-  <button class="nav-btn" onclick="showPage('compras',this)">
-    <span class="icon">🛒</span>Compras
-  </button>
-  <button class="nav-btn" onclick="showPage('recetas',this)">
-    <span class="icon">📖</span>Recetas
-  </button>
-</div>
-
-<!-- ==================== PREP ==================== -->
-<div id="page-prep" class="page active">
-
-  <div class="card">
-    <div class="section-title">Estructura fija todos los días</div>
-    <div class="estructura-row"><div class="estructura-label">Desayuno</div><div class="estructura-val">Panqueques + maní + frutos rojos</div></div>
-    <div class="estructura-row"><div class="estructura-label">Almuerzo<br><span style="font-size:11px;color:var(--text-secondary)">Lun/Mié/Vie/Dom</span></div><div class="estructura-val">Hummus + zanahoria + 2 huevos duros</div></div>
-    <div class="estructura-row"><div class="estructura-label">Almuerzo<br><span style="font-size:11px;color:var(--text-secondary)">Mar/Jue/Sáb</span></div><div class="estructura-val">Omelette de espinaca</div></div>
-    <div class="estructura-row"><div class="estructura-label">Cena</div><div class="estructura-val">Del freezer — lo disponible</div></div>
-    <div class="estructura-row"><div class="estructura-label" style="color:var(--orange)">Postre</div><div class="estructura-val" style="color:var(--orange)">Manzana asada con canela</div></div>
-  </div>
-
-  <div class="tab-row">
-    <button class="tab-pill active" onclick="showSub('prep','f1',this)">Finde 1</button>
-    <button class="tab-pill" onclick="showSub('prep','f2',this)">Finde 2</button>
-    <button class="tab-pill" onclick="showSub('prep','f3',this)">Finde 3</button>
-  </div>
-
-  <!-- FINDE 1 -->
-  <div id="prep-f1">
-    <div class="badge badge-green">Finde 1 — freezer 3 semanas</div>
-    <div class="section-title">Carne al horno + costillitas + puré</div>
-    <div class="section-sub">Una asadera a la vez. Sáb: freezer. Dom: frescos + prep rápido.</div>
-
-    <div class="tiempo-grid">
-      <div class="tiempo-box"><div class="tiempo-num">~2hs</div><div class="tiempo-label">Sábado</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~1hs</div><div class="tiempo-label">Domingo</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~3hs</div><div class="tiempo-label">Total</div></div>
+  <header class="app-header">
+    <div class="brand-simple">
+      <div class="brand-title">🚚 Chamba App</div>
+      <div class="brand-subtitle">Operación Bariloche</div><div class="version-marker">v10</div>
     </div>
+    <button id="installBtn" class="secondary-btn install-btn hidden" type="button">Instalar</button>
+  </header>
 
-    <div class="resumen-box">
-      <div class="resumen-title">Cantidades al freezer</div>
-      <div class="resumen-row"><div class="resumen-label">Costillitas de cerdo</div><div class="resumen-sub">1×sem × 3sem = 3 porciones</div><div class="resumen-cant">600g</div></div>
-      <div class="resumen-row"><div class="resumen-label">Carne al horno (nalga/paleta)</div><div class="resumen-sub">1×sem × 3sem = 3 porciones</div><div class="resumen-cant">500g</div></div>
-      <div class="resumen-row"><div class="resumen-label">Puré calabaza + zanahoria</div><div class="resumen-sub">1-2×sem × 3sem = 5 porciones</div><div class="resumen-cant">½ calabaza + 2 zanahorias</div></div>
-      <div class="resumen-row"><div class="resumen-label">Frutos secos tostados</div><div class="resumen-sub">stock del mes</div><div class="resumen-cant">250g alm + 200g nueces</div></div>
-    </div>
+  <main class="container">
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab active" data-tab="inicio" type="button">Inicio</button>
+      <button class="tab" data-tab="historial" type="button">Historial</button>
+      <button class="tab" data-tab="tarifas" type="button">Tarifas</button>
+    </nav>
 
-    <div class="prep-block prep-sab">
-      <div class="prep-block-title">🟣 Sábado — todo al freezer</div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Costillitas de cerdo</strong> — pimentón ahumado, comino, ajo, aluminio. 180°C.</div><div class="task-time">65 min</div></div>
-      <div class="task-row"><div class="task-icon">🫙</div><div class="task-text">Mientras hornean: puré de calabaza en hornalla. Porcionar 9 bolsas → freezer. Frutos secos en horno entre tanda y tanda.</div><div class="task-time">paralelo</div></div>
-      <div class="task-row"><div class="task-icon">✅</div><div class="task-text">Costillitas → enfriar, porcionar 6 bolsas → freezer.</div><div class="task-time">10 min</div></div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Carne al horno</strong> — nalga/paleta con ajo, zanahoria, zapallo, romero. 160°C tapado hermético.</div><div class="task-time">90 min</div></div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Frutos secos</strong> — 160°C mientras la carne. Bolsitas de 10.</div><div class="task-time">12 min</div></div>
-      <div class="task-row"><div class="task-icon">✅</div><div class="task-text">Carne lista → enfriar, porcionar en trozos o desmenuzar → 6 bolsas → freezer.</div><div class="task-time">10 min</div></div>
-    </div>
+    <section id="tab-inicio" class="tab-panel active">
+      <div id="celebration" class="celebration hidden" aria-live="polite"></div>
+      <section class="hero-card">
+        <div>
+          <p class="muted">Próximo cobro</p>
+          <h2 id="nextPaymentWindow">—</h2>
+          <p id="nextPaymentPeriod" class="small muted"></p>
+        </div>
+        <div class="amount-block">
+          <p class="muted">Acumulado</p>
+          <strong id="nextPaymentAmount">$ 0</strong>
+        </div>
+        <div class="stats">
+          <div><span id="daysCount">0</span><small>días</small></div>
+          <div><span id="kmCount">0</span><small>km</small></div>
+        </div>
+      </section>
 
-    <div class="prep-block prep-dom">
-      <div class="prep-block-title">🟢 Domingo — frescos + prep semanal</div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Verduras al horno</strong> — zapallito + morrón + berenjena. 200°C.</div><div class="task-time">30 min</div></div>
-      <div class="task-row"><div class="task-icon">🥚</div><div class="task-text">Paralelo: hervir 8 huevos. Enfriar, guardar con cáscara en heladera.</div><div class="task-time">paralelo</div></div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Manzanas asadas</strong> — 7 manzanas peladas, canela. 170°C.</div><div class="task-time">25 min</div></div>
-      <div class="task-row"><div class="task-icon">🥕</div><div class="task-text">Cortar 4 zanahorias en bastones. Recipiente con agua → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🌿</div><div class="task-text">Limpiar 1 atado espinaca → dividir en 3 porciones → bolsa → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🫙</div><div class="task-text">Frasco panqueques: avena + huevos + bananas pisadas + royal + canela → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🥫</div><div class="task-text">Hummus: procesar 1 lata garbanzos → heladera. Rinde 2 almuerzos.</div><div class="task-time">5 min</div></div>
-    </div>
-    <div class="tip">El puré se hace en la hornalla mientras el horno trabaja. Nunca hay tiempo muerto.</div>
-  </div>
+      <section class="card">
+        <div class="section-heading">
+          <div>
+            <h2>Agregar día trabajado</h2>
+            <p class="muted">Ingresá la fecha y los kilómetros recorridos.</p>
+          </div>
+        </div>
 
-  <!-- FINDE 2 -->
-  <div id="prep-f2" style="display:none">
-    <div class="badge badge-blue">Finde 2 — freezer 3 semanas</div>
-    <div class="section-title">Hamburguesas + pechuga desmenuzada</div>
-    <div class="section-sub">El horno está más libre. La pechuga se hierve en hornalla.</div>
+        <form id="workForm">
+          <input type="hidden" id="editId" />
 
-    <div class="tiempo-grid">
-      <div class="tiempo-box"><div class="tiempo-num">~1hs</div><div class="tiempo-label">Sábado</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~1hs</div><div class="tiempo-label">Domingo</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~2hs</div><div class="tiempo-label">Total</div></div>
-    </div>
+          <label>
+            Fecha
+            <input id="workDate" type="date" required />
+          </label>
 
-    <div class="resumen-box">
-      <div class="resumen-title">Cantidades al freezer</div>
-      <div class="resumen-row"><div class="resumen-label">Hamburguesas crudas</div><div class="resumen-sub">1×sem × 3sem = 3 hamburguesas</div><div class="resumen-cant">350g carne picada</div></div>
-      <div class="resumen-row"><div class="resumen-label">Pechuga desmenuzada</div><div class="resumen-sub">1×sem × 3sem = 3 porciones</div><div class="resumen-cant">450g pechugas</div></div>
-    </div>
+          <label>
+            Kilómetros
+            <input id="workKm" type="number" min="0" max="9999" step="1" inputmode="numeric" placeholder="Ej. 87" required />
+          </label>
 
-    <div class="prep-block prep-sab">
-      <div class="prep-block-title">🟣 Sábado — proteínas al freezer</div>
-      <div class="task-row"><div class="task-icon">🍗</div><div class="task-text"><strong>Pechuga desmenuzada</strong> — hervir 900g con laurel + limón. Desmenuzar. 6 bolsas con caldo → freezer.</div><div class="task-time">35 min</div></div>
-      <div class="task-row"><div class="task-icon">🍔</div><div class="task-text"><strong>Hamburguesas</strong> — mezclar 700g carne + ajo + perejil + huevo. 6 medallones → bandeja → freezer 1h → bolsas.</div><div class="task-time">15 min</div></div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Verduras al horno</strong> — zanahoria + zapallo. 200°C. Horno libre.</div><div class="task-time">30 min</div></div>
-    </div>
+          <div id="ratePreview" class="rate-preview">Ingresá los kilómetros para ver cuánto corresponde.</div>
 
-    <div class="prep-block prep-dom">
-      <div class="prep-block-title">🟢 Domingo — frescos + prep semanal</div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Manzanas asadas</strong> — 7 manzanas peladas, canela. 170°C.</div><div class="task-time">25 min</div></div>
-      <div class="task-row"><div class="task-icon">🥚</div><div class="task-text">Paralelo: hervir 8 huevos. Enfriar, guardar con cáscara.</div><div class="task-time">paralelo</div></div>
-      <div class="task-row"><div class="task-icon">🥕</div><div class="task-text">Cortar 4 zanahorias en bastones → recipiente con agua → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🌿</div><div class="task-text">Limpiar 1 atado espinaca → 3 porciones → bolsa → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🫙</div><div class="task-text">Frasco panqueques nuevo → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🥫</div><div class="task-text">Hummus: 1 lata garbanzos → heladera.</div><div class="task-time">5 min</div></div>
-    </div>
-    <div class="tip">El finde más liviano. Hamburguesas al freezer crudas, pechuga a la hornalla. El horno solo hace las verduras y manzanas.</div>
-  </div>
+          <div class="form-actions">
+            <button class="primary-btn" type="submit" id="saveBtn">Guardar día</button>
+            <button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancelar edición</button>
+          </div>
 
-  <!-- FINDE 3 -->
-  <div id="prep-f3" style="display:none">
-    <div class="badge badge-orange">Finde 3 — freezer 3 semanas</div>
-    <div class="section-title">Ñoquis de calabaza tradicionales + tortillas de espinaca</div>
-    <div class="section-sub">Sáb: horno para calabaza + tortillas en hornalla. Dom: frescos + tomate al horno.</div>
+          <p id="formMessage" class="message" aria-live="polite"></p>
+        </form>
+      </section>
 
-    <div class="tiempo-grid">
-      <div class="tiempo-box"><div class="tiempo-num">~1.5hs</div><div class="tiempo-label">Sábado</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~1hs</div><div class="tiempo-label">Domingo</div></div>
-      <div class="tiempo-box"><div class="tiempo-num">~2.5hs</div><div class="tiempo-label">Total</div></div>
-    </div>
+      <section class="card">
+        <div class="section-heading">
+          <div>
+            <h2>Días del próximo cobro</h2>
+            <p class="muted">Solo muestra la quincena que se cobrará primero.</p>
+          </div>
+        </div>
+        <div id="currentRows" class="record-list"></div>
+      </section>
+    </section>
 
-    <div class="resumen-box">
-      <div class="resumen-title">Cantidades al freezer</div>
-      <div class="resumen-row"><div class="resumen-label">Ñoquis de calabaza</div><div class="resumen-sub">1×sem × 3sem = 3 porciones</div><div class="resumen-cant">500g calabaza</div></div>
-      <div class="resumen-row"><div class="resumen-label">Tortillas de espinaca</div><div class="resumen-sub">1×sem × 3sem = 1-2 tortillas</div><div class="resumen-cant">4-6 huevos + ½ atado</div></div>
-    </div>
+    <section id="tab-historial" class="tab-panel">
+      <section class="card">
+        <div class="section-heading">
+          <div>
+            <h2>Historial de quincenas</h2>
+            <p class="muted">Totales agrupados por período de trabajo y ventana de cobro.</p>
+          </div>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </section>
 
-    <div class="prep-block prep-sab">
-      <div class="prep-block-title">🟣 Sábado — ñoquis y tortillas al freezer</div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Calabaza entera al horno</strong> — 1 kg a 200°C. Mientras: limpiar espinaca para tortillas.</div><div class="task-time">40 min</div></div>
-      <div class="task-row"><div class="task-icon">🌿</div><div class="task-text">Rehogar espinaca con ajo en hornalla en tandas. Escurrir y picar.</div><div class="task-time">paralelo</div></div>
-      <div class="task-row"><div class="task-icon">⏳</div><div class="task-text">Calabaza lista → retirar pulpa → pisar → dejar enfriar completamente.</div><div class="task-time">15 min reposo</div></div>
-      <div class="task-row"><div class="task-icon">🍳</div><div class="task-text"><strong>Tortillas</strong> — 3 tortillas de a una en sartén. Enfriar, porcionar, envolver → freezer.</div><div class="task-time">20 min</div></div>
-      <div class="task-row"><div class="task-icon">🫙</div><div class="task-text"><strong>Ñoquis</strong> — pulpa fría + fécula + huevo + sal + nuez moscada. Formar, cortar → bandeja → freezer 1h → bolsas.</div><div class="task-time">20 min</div></div>
-    </div>
+    <section id="tab-tarifas" class="tab-panel">
+      <section class="card">
+        <div class="section-heading">
+          <div>
+            <h2>Tarifas</h2>
+            <p class="muted">Podés actualizar los valores cuando cambie el régimen.</p>
+          </div>
+        </div>
 
-    <div class="prep-block prep-dom">
-      <div class="prep-block-title">🟢 Domingo — frescos + prep semanal</div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Tomate + morrón amarillo al horno</strong> — sin semillas ni cáscara. 200°C.</div><div class="task-time">30 min</div></div>
-      <div class="task-row"><div class="task-icon">🥚</div><div class="task-text">Paralelo: hervir 8 huevos → enfriar → heladera.</div><div class="task-time">paralelo</div></div>
-      <div class="task-row"><div class="task-icon">🔥</div><div class="task-text"><strong>Manzanas asadas</strong> — 7 manzanas peladas, canela. 170°C.</div><div class="task-time">25 min</div></div>
-      <div class="task-row"><div class="task-icon">🥕</div><div class="task-text">Cortar 4 zanahorias en bastones → recipiente con agua → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🌿</div><div class="task-text">Limpiar 1 atado espinaca → 3 porciones → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🫙</div><div class="task-text">Frasco panqueques nuevo → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🥫</div><div class="task-text">Hummus: 1 lata garbanzos → heladera.</div><div class="task-time">5 min</div></div>
-      <div class="task-row"><div class="task-icon">🍐</div><div class="task-text">Opcional: compota de pera y banana si hay peras maduras.</div><div class="task-time">15 min</div></div>
-    </div>
-    <div class="tip">Clave: la pulpa de calabaza tiene que estar completamente fría antes de armar los ñoquis. Hacer tortillas mientras reposa es el orden perfecto.</div>
-  </div>
-</div>
+        <label>
+          Vigentes desde
+          <input id="ratesEffectiveDate" type="date" />
+        </label>
 
-<!-- ==================== MENÚ ==================== -->
-<div id="page-menu" class="page">
-  <div class="warn">Desayuno siempre igual. Almuerzo: hummus lun/mié/vie/dom — omelette mar/jue/sáb. Postre: manzana asada siempre.</div>
+        <div id="ratesEditor" class="rates-editor"></div>
 
-  <div class="tab-row">
-    <button class="tab-pill active" onclick="showSub('menu','s1',this)">Semana 1</button>
-    <button class="tab-pill" onclick="showSub('menu','s2',this)">Semana 2</button>
-    <button class="tab-pill" onclick="showSub('menu','s3',this)">Semana 3</button>
-  </div>
+        <button id="saveRatesBtn" class="primary-btn" type="button">Guardar tarifas</button>
+        <p id="ratesMessage" class="message" aria-live="polite"></p>
+      </section>
 
-  <!-- SEMANA 1 -->
-  <div id="menu-s1">
-    <div class="info" style="font-size:12px;">🧊 Freezer: pechuga al horno · carne al horno · puré de calabaza</div>
-    <div class="tab-row">
-      <button class="tab-pill active" onclick="showDay('s1','lun',this)">Lun</button>
-      <button class="tab-pill" onclick="showDay('s1','mar',this)">Mar</button>
-      <button class="tab-pill" onclick="showDay('s1','mie',this)">Mié</button>
-      <button class="tab-pill" onclick="showDay('s1','jue',this)">Jue</button>
-      <button class="tab-pill" onclick="showDay('s1','vie',this)">Vie</button>
-      <button class="tab-pill" onclick="showDay('s1','sab',this)">Sáb</button>
-      <button class="tab-pill" onclick="showDay('s1','dom',this)">Dom</button>
-    </div>
-    <div id="s1-lun" class="card">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div><div class="meal-desc">Volcar del frasco directo a la sartén.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Todo del prep del domingo. Frutos secos al costado.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga al horno + verduras + aceitunas</div><div class="meal-desc">Del freezer. Verduras frescas del domingo. 6 aceitunas + oliva.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-mar" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">1ª porción espinaca del domingo. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Carne al horno + puré de calabaza + aceitunas</div><div class="meal-desc">Del freezer. Puré descongelado. 6 aceitunas.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-mie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Abrir 2ª lata hoy → hacer hummus. Zanahorias y huevos del domingo.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga + puré de zanahoria + frutos secos</div><div class="meal-desc">Del freezer. 10 frutos secos.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-jue" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div><div class="meal-desc">Frasco nuevo del jueves si se terminó.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">2ª porción espinaca del domingo. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Carne al horno + verduras al horno + aceitunas</div><div class="meal-desc">Del freezer. Verduras frescas. 6 aceitunas.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-vie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Hummus del miércoles. Cortar zanahorias + hervir 4 huevos hoy para vie y dom.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga + verduras al horno + aceitunas</div><div class="meal-desc">Del freezer. Últimas verduras de la semana.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-sab" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">3ª porción espinaca del domingo. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Carne al horno + puré de calabaza + frutos secos</div><div class="meal-desc">Del freezer. Finde 2 ya disponible.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s1-dom" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Hummus del miércoles. Huevos del viernes. Zanahorias del viernes.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell nuevo"><div class="meal-nuevo">nuevo del finde 2</div><div class="meal-name">Hamburguesa + zanahoria al horno + frutos secos</div><div class="meal-desc">Primera hamburguesa del finde 2.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-  </div>
+      <section class="card warning-card">
+        <h3>Importante</h3>
+        <p>Los datos se guardan en este dispositivo y navegador. Si se borran los datos del navegador, también se borra el historial.</p>
+      </section>
+    </section>
+  </main>
 
-  <!-- SEMANA 2 -->
-  <div id="menu-s2" style="display:none">
-    <div class="info" style="font-size:12px;">🧊 Freezer: pechuga · carne al horno · puré · hamburguesas · pechuga desmenuzada</div>
-    <div class="tab-row">
-      <button class="tab-pill active" onclick="showDay('s2','lun',this)">Lun</button>
-      <button class="tab-pill" onclick="showDay('s2','mar',this)">Mar</button>
-      <button class="tab-pill" onclick="showDay('s2','mie',this)">Mié</button>
-      <button class="tab-pill" onclick="showDay('s2','jue',this)">Jue</button>
-      <button class="tab-pill" onclick="showDay('s2','vie',this)">Vie</button>
-      <button class="tab-pill" onclick="showDay('s2','sab',this)">Sáb</button>
-      <button class="tab-pill" onclick="showDay('s2','dom',this)">Dom</button>
-    </div>
-    <div id="s2-lun" class="card">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Todo del prep del domingo.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga desmenuzada + brócoli + aceitunas</div><div class="meal-desc">Del freezer finde 2. Brócoli fresco 5 min. 6 aceitunas.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-mar" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">1ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Carne al horno + verduras al horno + aceitunas</div><div class="meal-desc">Del freezer finde 1. Verduras frescas.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-mie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Abrir 2ª lata hoy → hummus fresco.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Hamburguesa + acelga salteada + frutos secos</div><div class="meal-desc">Del freezer finde 2. Acelga fresca 5 min. 10 frutos secos.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-jue" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div><div class="meal-desc">Frasco nuevo del jueves si se terminó.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">2ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga al horno + puré + aceitunas</div><div class="meal-desc">Del freezer finde 1. Puré descongelado.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-vie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Hummus del mié. Cortar zanahorias + hervir 4 huevos para vie y dom.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga desmenuzada + zanahoria al horno + frutos secos</div><div class="meal-desc">Del freezer finde 2. 10 frutos secos.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-sab" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">3ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Hamburguesa + verduras al horno + aceitunas</div><div class="meal-desc">Del freezer finde 2. Finde 3 ya disponible.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s2-dom" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + compota de pera</div><div class="meal-desc">Variación con compota del finde 3.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Hummus del mié. Huevos del vie.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell nuevo"><div class="meal-nuevo">nuevo del finde 3</div><div class="meal-name">Ñoquis de calabaza + tomate cocido + queso</div><div class="meal-desc">Hervir 3-4 min. Tomate + aceite + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-  </div>
+  <template id="recordTemplate">
+    <article class="record-row">
+      <div>
+        <strong class="record-date"></strong>
+        <p class="record-km muted"></p>
+      </div>
+      <div class="record-actions">
+        <strong class="record-amount"></strong>
+        <button class="icon-btn edit-btn" type="button" aria-label="Editar">Editar</button>
+        <button class="icon-btn danger delete-btn" type="button" aria-label="Eliminar">Borrar</button>
+      </div>
+    </article>
+  </template>
 
-  <!-- SEMANA 3 -->
-  <div id="menu-s3" style="display:none">
-    <div class="info" style="font-size:12px;">🧊 Freezer: pechuga · carne al horno · puré · hamburguesas · desmenuzada · ñoquis · tortillas</div>
-    <div class="tab-row">
-      <button class="tab-pill active" onclick="showDay('s3','lun',this)">Lun</button>
-      <button class="tab-pill" onclick="showDay('s3','mar',this)">Mar</button>
-      <button class="tab-pill" onclick="showDay('s3','mie',this)">Mié</button>
-      <button class="tab-pill" onclick="showDay('s3','jue',this)">Jue</button>
-      <button class="tab-pill" onclick="showDay('s3','vie',this)">Vie</button>
-      <button class="tab-pill" onclick="showDay('s3','sab',this)">Sáb</button>
-      <button class="tab-pill" onclick="showDay('s3','dom',this)">Dom</button>
-    </div>
-    <div id="s3-lun" class="card">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Todo del prep del domingo.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Ñoquis + tomate y morrón al horno + queso</div><div class="meal-desc">Del freezer finde 3. Hervir 3-4 min. Tomate del domingo.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-mar" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + compota de pera</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">1ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Tortilla de espinaca + verduras + aceitunas</div><div class="meal-desc">Del freezer finde 3. Calentar en sartén tapada.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-mie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Abrir 2ª lata hoy → hummus fresco.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Pechuga al horno + puré + aceitunas</div><div class="meal-desc">Del freezer finde 1.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-jue" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div><div class="meal-desc">Frasco nuevo del jueves si se terminó.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">2ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Hamburguesa + brócoli salteado + frutos secos</div><div class="meal-desc">Del freezer finde 2. Brócoli fresco 5 min.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-vie" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Cortar zanahorias + hervir 4 huevos para vie y dom.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Ñoquis + aceite de oliva + queso duro</div><div class="meal-desc">Del freezer finde 3. Simples con oliva y queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-sab" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Omelette de espinaca + frutos secos</div><div class="meal-desc">3ª porción espinaca. 3 huevos + queso.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Tortilla de espinaca + tomate al horno + aceitunas</div><div class="meal-desc">Del freezer finde 3. Calentar en sartén.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-    <div id="s3-dom" class="card" style="display:none">
-      <div class="meal-row"><div class="meal-label">Desayuno</div><div class="meal-cell"><div class="meal-name">Panqueques + maní + frutos rojos</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Almuerzo</div><div class="meal-cell"><div class="meal-name">Hummus + zanahoria + 2 huevos duros</div><div class="meal-desc">Hummus del mié. Huevos del vie.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label">Cena</div><div class="meal-cell"><div class="meal-name">Carne al horno + puré + aceitunas</div><div class="meal-desc">Del freezer finde 1.</div></div></div>
-      <hr class="divider">
-      <div class="meal-row"><div class="meal-label postre">Postre</div><div class="meal-cell postre"><div class="meal-name" style="color:var(--orange)">Manzana asada con canela</div></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== COMPRAS ==================== -->
-<div id="page-compras" class="page">
-  <div class="tab-row">
-    <button class="tab-pill active" onclick="showSub('compras','c1',this)">Finde 1</button>
-    <button class="tab-pill" onclick="showSub('compras','c2',this)">Finde 2</button>
-    <button class="tab-pill" onclick="showSub('compras','c3',this)">Finde 3</button>
-  </div>
-
-  <div id="compras-c1"></div>
-  <div id="compras-c2" style="display:none"></div>
-  <div id="compras-c3" style="display:none"></div>
-
-  <div class="tip" style="margin-top:4px;">Frescos semanales siempre: 7 manzanas · verduras para horno · 2 atados espinaca · 4 zanahorias · bananas · frutos rojos · aceitunas · limones · 2 latas garbanzos.</div>
-</div>
-
-<!-- ==================== RECETAS ==================== -->
-<div id="page-recetas" class="page">
-  <div class="tab-row">
-    <button class="tab-pill active" onclick="showSub('recetas','rb',this)">Base diaria</button>
-    <button class="tab-pill" onclick="showSub('recetas','r1',this)">Finde 1</button>
-    <button class="tab-pill" onclick="showSub('recetas','r2',this)">Finde 2</button>
-    <button class="tab-pill" onclick="showSub('recetas','r3',this)">Finde 3</button>
-  </div>
-
-  <div id="recetas-rb"></div>
-  <div id="recetas-r1" style="display:none"></div>
-  <div id="recetas-r2" style="display:none"></div>
-  <div id="recetas-r3" style="display:none"></div>
-</div>
-
-<script>
-// NAV
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-
-// TABS within page
-function showSub(page, id, btn) {
-  const prefix = page + '-';
-  document.querySelectorAll('[id^="' + prefix + '"]').forEach(el => el.style.display = 'none');
-  document.getElementById(prefix + id).style.display = 'block';
-  btn.closest('.tab-row').querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// DAY tabs
-const dayState = {};
-function showDay(semana, day, btn) {
-  const days = ['lun','mar','mie','jue','vie','sab','dom'];
-  days.forEach(d => {
-    const el = document.getElementById(semana + '-' + d);
-    if (el) el.style.display = 'none';
-  });
-  document.getElementById(semana + '-' + day).style.display = 'block';
-  btn.closest('.tab-row').querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// COMPRAS DATA
-const comprasData = {
-  c1: {
-    'CARNICERÍA': [
-      'Costillitas de cerdo 600g',
-      'Nalga o paleta 500g'
-    ],
-    'VERDULERÍA': [
-      '½ calabaza mediana (puré)',
-      '2 zanahorias (puré)',
-      '2 zapallitos (verduras horno)',
-      '1 morrón rojo (verduras horno)',
-      '1 berenjena (verduras horno)',
-      '2 atados espinaca',
-      '7 manzanas (postre)',
-      '7 bananas chicas — o — 4 grandes',
-      '4 zanahorias (bastones almuerzo)',
-      'Frutos rojos congelados 300g'
-    ],
-    'DESPENSA': [
-      'Huevos x22',
-      '2 latas garbanzos 300g',
-      'Queso duro 80g',
-      'Aceitunas verdes 150g',
-      'Almendras crudas 250g',
-      'Nueces 200g',
-      'Pasta de maní sin azúcar',
-      'Aceite de oliva extra virgen',
-      'Harina de avena 500g',
-      'Polvo royal',
-      'Canela, romero seco',
-      'Pimentón ahumado, comino',
-      'Ajo, sal, pimienta',
-      'Aceite de coco o girasol',
-      'Limones x2'
-    ]
-  },
-  c2: {
-    'CARNICERÍA': [
-      'Carne picada 350g (hamburguesas)',
-      'Pechugas de pollo 450g (desmenuzar)'
-    ],
-    'VERDULERÍA': [
-      '1 brócoli',
-      '1 atado acelga',
-      '2 zanahorias (horno)',
-      '1 zapallo mediano (horno)',
-      '2 atados espinaca',
-      '7 manzanas (postre)',
-      '7 bananas chicas — o — 4 grandes',
-      '4 zanahorias (bastones almuerzo)',
-      'Frutos rojos congelados 300g'
-    ],
-    'DESPENSA': [
-      'Huevos x25',
-      '2 latas garbanzos 300g',
-      'Queso duro 80g',
-      'Aceitunas verdes 150g',
-      'Perejil fresco',
-      'Laurel',
-      'Limones x3'
-    ]
-  },
-  c3: {
-    'CARNICERÍA': [
-      '— sin carne este finde'
-    ],
-    'VERDULERÍA': [
-      '500g calabaza (ñoquis)',
-      '2 atados espinaca (tortillas + omelette)',
-      'Tomates perita 300g',
-      '1 morrón amarillo',
-      '3 peras maduras (compota opcional)',
-      '1 banana madura (compota)',
-      '7 manzanas (postre)',
-      '7 bananas chicas — o — 4 grandes',
-      '4 zanahorias (bastones almuerzo)',
-      'Frutos rojos congelados 300g'
-    ],
-    'DESPENSA': [
-      'Huevos x25 (6 tortillas + desayuno + almuerzos + omelette)',
-      '2 latas garbanzos 300g',
-      'Queso duro 120g',
-      'Aceitunas verdes 150g',
-      'Harina de avena 200g (ñoquis)',
-      'Nuez moscada',
-      'Limones x2'
-    ]
-  }
-};
-
-const clsMap = { 'CARNICERÍA': 'carniceria', 'VERDULERÍA': 'verduleria', 'DESPENSA': 'despensa' };
-
-function buildCompras() {
-  ['c1','c2','c3'].forEach(cid => {
-    const el = document.getElementById('compras-' + cid);
-    const data = comprasData[cid];
-    let html = '';
-    Object.entries(data).forEach(([cat, items]) => {
-      html += `<div class="compra-section">
-        <div class="compra-title ${clsMap[cat]}">${cat}</div>`;
-      items.forEach((item, i) => {
-        const id = cid + '-' + i + '-' + cat.slice(0,3);
-        html += `<div class="compra-item" onclick="toggleCompra(this)" id="${id}">
-          <div class="compra-check"></div>
-          <div class="compra-text">${item}</div>
-        </div>`;
+  <script src="./app.js?v=10"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.unregister());
       });
-      html += '</div>';
-    });
-    el.innerHTML = html;
-  });
-}
-
-function toggleCompra(el) {
-  el.classList.toggle('done');
-  el.querySelector('.compra-check').textContent = el.classList.contains('done') ? '✓' : '';
-}
-
-// RECETAS DATA
-const recetasData = {
-  rb: [
-    {
-      title: 'Frasco de panqueques — mezcla líquida',
-      meta: 'Preparar domingo y jueves · 4 porciones c/frasco · 1 panqueque por mañana',
-      tags: ['proteína','grasa'],
-      tagCls: ['tag-p','tag-g'],
-      ing: 'Frasco domingo (4 porciones lun-jue): 2 tazas harina avena · 4 huevos · 4 bananas chicas pisadas (o 2 grandes) · 1 cdta polvo royal · 1 cdta canela · pizca sal. Frasco jueves: mismas cantidades.',
-      steps: [
-        'Pisar las bananas hasta pasta suave. Batir los huevos.',
-        'Mezclar huevos + bananas + canela + sal + polvo royal.',
-        'Agregar avena y mezclar hasta sin grumos. Queda espesa.',
-        'Frasco de vidrio hermético → heladera. Dura 4 días.',
-        'Cada mañana: agitar el frasco. Volcar ¼ en sartén caliente con gota de aceite. Si quedó espeso agregar 1 cdta agua. Cocinar 2-3 min por lado.'
-      ],
-      tip: 'Si la banana está muy madura la mezcla queda más líquida — agregar 1 cdta extra de avena.'
-    },
-    {
-      title: 'Huevos duros',
-      meta: 'Domingo: 8 huevos para lun/mié · Viernes: 4 huevos para vie/dom',
-      tags: ['proteína'],
-      tagCls: ['tag-p'],
-      ing: '8 huevos (domingo) · 4 huevos (viernes) · agua · sal',
-      steps: [
-        'Poner huevos en olla cubiertos de agua fría con pizca de sal.',
-        'Llevar a hervor. Cuando rompa, bajar fuego medio y contar 10 min.',
-        'Pasar a agua fría con hielo 5 min. Guardar con cáscara en heladera. Pelar al momento de comer.'
-      ]
-    },
-    {
-      title: 'Hummus express de lata',
-      meta: 'Domingo y miércoles · 5 min · 1 lata 300g = 2 almuerzos',
-      tags: ['proteína','grasa'],
-      tagCls: ['tag-p','tag-g'],
-      ing: '1 lata garbanzos 300g · 2 cdas aceite de oliva · jugo ½ limón · 1 diente ajo · sal · comino',
-      steps: [
-        'Escurrir y enjuagar los garbanzos.',
-        'Procesar o pisar: garbanzos + aceite + limón + ajo + sal + comino. Agregar 1-2 cdas agua si queda espeso.',
-        'Guardar en heladera. Rinde 2 almuerzos. Servir con bastones zanahoria + 2 huevos duros + frutos secos.'
-      ]
-    },
-    {
-      title: 'Omelette de espinaca',
-      meta: 'Mar / Jue / Sáb · 10 min · Con espinaca limpia del domingo',
-      tags: ['proteína','vegetal'],
-      tagCls: ['tag-p','tag-v'],
-      ing: '3 huevos · 1 porción espinaca limpia del prep · 2 cdas queso duro rallado · sal · aceite de oliva',
-      steps: [
-        'Rehogar la porción de espinaca con ajo 2 min. Picar.',
-        'Batir huevos con sal. Mezclar con espinaca y queso.',
-        'Cocinar en sartén con aceite a fuego medio. Doblar cuando cuaja por abajo (2-3 min). Servir con frutos secos.'
-      ]
-    },
-    {
-      title: 'Manzanas asadas con canela',
-      meta: 'Cada domingo · 25 min · 7 unidades · postre diario',
-      tags: ['postre'],
-      tagCls: ['tag-v'],
-      ing: '7 manzanas · canela en polvo generosa',
-      steps: [
-        'Pelar y descorazonar. Colocar en asadera. Espolvorear canela.',
-        'Hornear 170°C, 25 min. Guardar en heladera tapadas. Duran toda la semana.'
-      ]
     }
-  ],
-  r1: [
-    {
-      title: 'Costillitas de cerdo ahumadas',
-      meta: 'Sábado finde 1 · 70 min · 1.2 kg · 6 bolsas al freezer',
-      tags: ['proteína'],
-      tagCls: ['tag-p'],
-      ing: '600g costillitas · 1 cdta pimentón ahumado · 1 cdta comino · 2 dientes ajo picado · sal · aceite de oliva',
-      steps: [
-        'Mezclar pimentón, comino, ajo, sal y aceite. Cubrir bien las costillitas con la mezcla.',
-        'Colocar en asadera y tapar herméticamente con papel aluminio doble.',
-        'Hornear a 180°C durante 65 min tapado. Destapar 5 min finales para dorar.',
-        'Enfriar completamente. Porcionar en 3 bolsas etiquetadas con fecha → freezer. Duran 3 meses.'
-      ]
-    },
-    {
-      title: 'Carne al horno con verduras (nalga o paleta)',
-      meta: 'Sábado finde 1 · 100 min · 1 kg · 6 bolsas al freezer',
-      tags: ['proteína'],
-      tagCls: ['tag-p'],
-      ing: '500g nalga o paleta en trozos · 1 zanahoria en rodajas · ¼ zapallo en cubos · 2 dientes ajo · romero · aceite de oliva · sal · pimienta · ¼ taza agua o caldo',
-      steps: [
-        'Cortar la carne en trozos grandes de ~150g. Salpimentar bien.',
-        'En asadera colocar los trozos de carne. Alrededor distribuir zanahoria, zapallo y ajo.',
-        'Agregar romero, aceite de oliva y el agua o caldo en el fondo de la asadera.',
-        'Tapar muy bien con papel aluminio doble. Hornear a 160°C durante 90 min.',
-        'Destapar los últimos 10 min para que dore un poco. La carne tiene que estar muy tierna.',
-        'Enfriar. Porcionar en 3 bolsas con jugo de cocción → freezer. Duran 3 meses.'
-      ],
-      tip: 'El secreto es la temperatura baja y el tapado hermético. A 160°C el colágeno se rompe y la carne queda tierna sin secarse. Si no encontrás nalga, la paleta funciona igual de bien.'
-    },
-    {
-      title: 'Puré de calabaza y zanahoria',
-      meta: 'Sábado finde 1 · hornalla · 9 bolsas al freezer',
-      tags: ['vegetal'],
-      tagCls: ['tag-v'],
-      ing: '1 calabaza grande · 3 zanahorias · aceite de oliva · sal',
-      steps: [
-        'Pelar, cortar y cocinar al vapor en hornalla mientras el horno trabaja. 25 min hasta muy tiernos.',
-        'Escurrir muy bien. Pisar hasta suave. Agregar aceite y sal.',
-        'Porcionar en 9 bolsas de 200g aplanadas → freezer. Para usar: calentar en olla a fuego mínimo con 1 cdta agua.'
-      ]
-    },
-    {
-      title: 'Frutos secos tostados — stock del mes',
-      meta: 'Sábado finde 1 · 12 min · 250g almendras + 200g nueces',
-      tags: ['grasa'],
-      tagCls: ['tag-g'],
-      ing: '250g almendras crudas · 200g nueces · pizca sal',
-      steps: [
-        'Distribuir en asadera en capa simple. Hornear 160°C, 10-12 min. Revolver a mitad.',
-        'Enfriar. Armar bolsitas de 10 unidades. Frasco hermético. Duran 3 semanas.'
-      ]
-    }
-  ],
-  r2: [
-    {
-      title: 'Pechuga desmenuzada al limón',
-      meta: 'Sábado finde 2 · hornalla · 900g · 6 bolsas al freezer',
-      tags: ['proteína'],
-      tagCls: ['tag-p'],
-      ing: '450g pechugas · 1 limón · 1 hoja laurel · sal · pimienta · agua',
-      steps: [
-        'Poner pechugas en olla con agua fría, laurel, sal, pimienta y jugo de limón.',
-        'Hervir a fuego medio 25 min. Enfriar en el caldo.',
-        'Desmenuzar con dos tenedores. 3 bolsas de 150g con chorrito de caldo → freezer planas.'
-      ]
-    },
-    {
-      title: 'Hamburguesas caseras para freezar',
-      meta: 'Sábado finde 2 · 15 min · 700g carne · 6 hamburguesas',
-      tags: ['proteína'],
-      tagCls: ['tag-p'],
-      ing: '350g carne picada · 1 diente ajo · 1 cda perejil · 1 huevo pequeño · sal · pimienta',
-      steps: [
-        'Mezclar todo hasta integrar. Formar 3 medallones de ~115g.',
-        'Freezar en bandeja con papel 1 hora separadas. Luego en 1 bolsa. Duran 3 meses.',
-        'Para cocinar: descongelar 30 min. Sellar en sartén caliente 4 min por lado sin mover.'
-      ]
-    }
-  ],
-  r3: [
-    {
-      title: 'Ñoquis de calabaza — receta tradicional',
-      meta: 'Sábado finde 3 · horno + prep · 1 kg calabaza · ~30 ñoquis · freezer',
-      tags: ['carb sin trigo','vegetal'],
-      tagCls: ['tag-c','tag-v'],
-      ing: '500g calabaza · 125g harina de avena · 1 huevo · 25g queso duro rallado · sal · pimienta · nuez moscada',
-      steps: [
-        'Cortar calabaza en cubos y hornear a 200°C hasta blanda (20-25 min). No hervir nunca — absorbe agua y arruina la masa.',
-        'Retirar la pulpa y pisarla muy bien. Extender en una tabla y dejar enfriar completamente — este paso es clave para que no quede aguada.',
-        'En un bowl: pulpa de calabaza fría + huevo + queso rallado + sal + pimienta + nuez moscada. Mezclar bien.',
-        'Agregar la harina de a poco, mezclando suave. La masa lista se despega de las manos sin pegarse pero sin estar seca. No agregar más harina de la necesaria.',
-        'Espolvorear harina en la mesada. Tomar porciones de masa y formar rollitos de 2 cm de grosor. Cortar en trozos de 2 cm.',
-        'Opcional: marcar con tenedor para que agarre salsa.',
-        'Freezar crudos: bandeja con papel enharinada, sin que se toquen, 1 hora. Luego bolsas de ~10 porciones. Duran 2 meses.',
-        'Para cocinar: hervir directo del freezer en agua con sal abundante. Listos cuando suben a la superficie (3-4 min). Servir con tomate cocido + aceite de oliva + queso duro rallado.'
-      ],
-      tip: 'El queso rallado en la masa es el ingrediente que da elasticidad y evita que se partan. La calabaza tiene que estar bien fría y seca antes de mezclar — si está húmeda o caliente va a absorber demasiada harina y quedan pesados.'
-    },
-    {
-      title: 'Tortillas de espinaca y queso (3 tortillas)',
-      meta: 'Sábado finde 3 · hornalla · 9 huevos + 1 atado espinaca · freezer',
-      tags: ['proteína','vegetal'],
-      tagCls: ['tag-p','tag-v'],
-      ing: 'Por tortilla: 3 huevos · 1 taza espinaca cocida escurrida · 2 cdas queso duro rallado · sal · aceite',
-      steps: [
-        'Mientras la calabaza hornea: rehogar toda la espinaca con ajo en tandas. Escurrir muy bien y picar.',
-        'Por cada tortilla: batir 3 huevos con sal, mezclar con porción de espinaca y queso.',
-        'Cocinar en sartén con aceite a fuego medio-bajo, tapada, 5 min hasta cuajar.',
-        'Enfriar, cortar en porciones, envolver en papel film → freezer en bolsa. Duran 1 mes.',
-        'Para servir: calentar en sartén tapada a fuego mínimo 3-4 min.'
-      ]
-    },
-    {
-      title: 'Compota de pera y banana',
-      meta: 'Domingo finde 3 · hornalla · 15 min · opcional',
-      tags: ['fruta'],
-      tagCls: ['tag-v'],
-      ing: '3 peras maduras · 1 banana madura · canela',
-      steps: [
-        'Pelar peras, retirar semillas. Cortar en cubos. Cocinar en olla con 2 cdas agua + canela, 10 min.',
-        'Agregar banana pisada, mezclar 2 min. Apagar. Guardar en heladera hasta 5 días.'
-      ]
-    }
-  ]
-};
-
-function buildRecetas() {
-  Object.entries(recetasData).forEach(([rid, recetas]) => {
-    const el = document.getElementById('recetas-' + rid);
-    let html = '';
-    recetas.forEach(r => {
-      html += `<div class="receta-card">
-        <div class="receta-title">${r.title}</div>
-        <div class="receta-meta">${r.meta}</div>
-        <div style="margin-bottom:8px;">${r.tags.map((t,i) => `<span class="tag ${r.tagCls[i]}">${t}</span>`).join('')}</div>
-        <div class="receta-ing"><strong>Ingredientes:</strong> ${r.ing}</div>
-        ${r.steps.map((s,i) => `<div class="receta-step"><div class="step-num">${i+1}</div><div>${s}</div></div>`).join('')}
-        ${r.tip ? `<div class="tip">${r.tip}</div>` : ''}
-      </div>`;
-    });
-    el.innerHTML = html;
-  });
-}
-
-// REGISTER SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-
-buildCompras();
-buildRecetas();
-</script>
+  </script>
 </body>
 </html>
